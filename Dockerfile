@@ -17,9 +17,24 @@ RUN yum -y install nginx
 # Installing other utilities
 RUN yum -y install git software-properties-common zip unzip
 
+# Installing supervisor
+RUN yum install -y python-setuptools
+RUN easy_install pip
+RUN pip install supervisor
+
 # Other configs / timezone, short tags, etc
 COPY settings/php.d /etc/php.d
 
 # Adding the configuration file of the nginx
 COPY settings/nginx/conf.d /etc/nginx/conf.d
 ADD  settings/nginx/nginx.conf /etc/nginx/nginx.conf
+
+# Adding the configuration file of the Supervisor
+ADD settings/supervisord/supervisord.conf /etc/
+
+# adding start.sh
+ADD scripts/start.sh /start.sh
+RUN chmod 755 /start.sh
+
+# Executing supervisord
+CMD ["sh","/start.sh"]
